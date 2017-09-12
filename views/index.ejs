@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/main.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,400i|Montserrat:400,500i" rel="stylesheet">
+        <link rel="stylesheet" href="/flag-icon-css/css/flag-icon.css"></link>
+    </head>
+    <body>
+        <div class="header">
+            <div class="logo"></div>
+        </div>
+        <div class="info">
+            <li>CoderBunker</li>
+            <li class="right"><%= date %></li>
+        </div>
+        <div class="body">
+            
+            <table>
+                <tr class="table-header">
+                    <th class=""></th>
+                    <th class="rank-head">#</th>
+                    <th class="image"></span></th>
+                    <th class="name-head">co-learner</th>
+                    <th></th>
+                    <th class="score-head">score</th>
+                    <th class="streak-head">streak</th>
+                </tr>
+                <% var rank = 1; %>
+                <% users.forEach(function(user){ %>
+                
+                    <tr>
+                        <% if (user.certificate.length > 0) { %>
+                        <th class="badge"></th>
+                        <% } else { %>
+                        <th></th>
+                        <% } %>
+                        <th class="rank"><%= rank %></th>
+                        <th class="image"><img src="<%= user.image %>"></th>
+                        <th class="name"><%= user.name %></th>
+                        <th><span class="flag-icon flag-icon-<%= user.country %>"></span></th>
+                        <th class="score"><%= user.score %></th>
+                        <th class="streak"><%= user.streak.substr(16) %></th>
+                    </tr>
+                    <% rank++ %>
+                <% }); %>
+            </table>
+            
+          
+            
+        </div>
+        
+        
+        
+    
+        
+    </body>
+</html>
+
+
+
+

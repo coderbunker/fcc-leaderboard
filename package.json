@@ -1,0 +1,24 @@
+{
+  "name": "fcc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "8.4.0"
+  },
+  "author": "Alex Miller",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "cheerio": "^1.0.0-rc.2",
+    "ejs": "^2.5.7",
+    "express": "^4.15.4",
+    "googleapis": "^21.3.0",
+    "moment": "^2.18.1",
+    "mongoose": "^4.11.11"
+  }
+}
