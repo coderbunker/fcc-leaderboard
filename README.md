@@ -1,4 +1,4 @@
-# CoderBunker FreeCodeCamp Leaderboard
+# freeCodeCamp Leaderboard
 
 Allows you to see the progress of each CoderBunker member.
 
