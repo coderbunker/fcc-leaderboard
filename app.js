@@ -1,6 +1,5 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const fs = require('fs');
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -8,7 +7,6 @@ const google = require('googleapis');
 const moment = require('moment');
 
 const keys = require('./config/keys');
-const userList = require('./users.json');
 const User = require("./models/user");
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/fcc");
@@ -17,41 +15,6 @@ app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + "/public"));
 
-app.get("/ss", function(req, res) {
-
-  let result = [];
-
-  var sheets = google.sheets('v4');
-  sheets.spreadsheets.values.get({
-    auth: keys.apiKey,
-    spreadsheetId: '1qNfCUG64eFAitoprpC0Uy8yUr5byLSkFIiYQQ9L4vMg',
-    range: 'user database!A:Z'
-  }, function(err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    }
-    var rows = response.values;
-    // console.log(rows);
-    rows.forEach((data) => {
-      let name = data[0];
-      let username = data[2];
-      let country = data[3];
-      let user = {
-        name,
-        username,
-        country
-      };
-      result.push(user);
-
-    })
-    console.log(result);
-    fs.writeFile('users.json', JSON.stringify(result, null, 4), function(err) {
-      console.log('File successfully written!');
-    });
-  });
-
-});
 
 app.get('/new', (req, res) => {
 
@@ -74,34 +37,24 @@ app.get('/new', (req, res) => {
       let name = data[0];
       let username = data[2];
       let country = data[3];
-      if (username.length !== 0 && name !== 'who') {
+      if (username.length > 1 && name !== 'who') {
         let user = {
           name,
           username,
           country
         };
-        result.push(user);
+        scrape(`http://www.freecodecamp.com/${user.username}`, name, country);
       }
 
-
     })
-    console.log(result);
-    fs.writeFile('users.json', JSON.stringify(result, null, 4), function(err) {
-      console.log('File successfully written!');
-    });
-  });
-  // ==========================
-
-  userList.forEach((item) => {
-    scrape(`http://www.freecodecamp.com/${item.username}`);
-  });
-  res.redirect('/');
+  })
+    res.redirect('/');
 });
 
 app.get('/remove', (req, res) => {
   User.remove({}, (err) => {
     if (!err) {
-      res.send('deleted');
+      res.redirect('/');
     }
   });
 
@@ -128,23 +81,24 @@ app.get("/", function(req, res) {
 setInterval(() => {
   User.find({}).sort({updated: 1}).exec((err, data) => {
     data.forEach((doc) => {
-      console.log(doc.username + ' ' + doc.updated);
+      if (doc) {
+        console.log(doc.username + ' ' + doc.updated);
+      }
     });
-
-    scrape(`http://www.freecodecamp.com/${data[0].username}`);
+    if (data.length > 0) {
+      scrape(`http://www.freecodecamp.com/${data[0].username}`, data[0].name, data[0].country);
+    }
   });
 }, 1000 * 60);
 
-const scrape = (url) => axios.get(url).then(response => Promise.resolve(response.data)).then(html => {
+const scrape = (url, name, country) => axios.get(url).then(response => Promise.resolve(response.data)).then(html => {
   var $ = cheerio.load(html);
 
-  var name,
-    score,
-    username,
-    streak,
-    image,
-    certificate,
-    country;
+  var score,
+      username,
+      streak,
+      image,
+      certificate;
 
   score = $('h1.flat-top.text-primary').text().substr(2).slice(0, -2);
   username = $('h1.text-center').first().text();
@@ -152,12 +106,12 @@ const scrape = (url) => axios.get(url).then(response => Promise.resolve(response
   image = $('img.img-center.img-responsive.public-profile-img').attr('src');
   certificate = $('.col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2 > a').text();
 
-  userList.forEach((doc) => {
-    if (doc.username.toLowerCase() === username.toLowerCase()) {
-      country = doc.country.substr(0, 2);
-      name = doc.name;
-    }
-  });
+  // userList.forEach((doc) => {
+  //   if (doc.username.toLowerCase() === username.toLowerCase()) {
+  //     country = doc.country.substr(0, 2);
+  //     name = doc.name;
+  //   }
+  // });
 
   User.findOneAndUpdate({
     username
