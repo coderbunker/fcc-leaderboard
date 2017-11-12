@@ -21,6 +21,12 @@
 .flag-icon-ad {
   background-image: url(../flags/4x3/ad.svg);
 }
+.flag-icon-ca-qc {
+  background-image: url(http://flags.ox3.in/svg/ca/qc.svg);
+}
+.flag-icon-fr-bre {
+  background-image: url(https://upload.wikimedia.org/wikipedia/commons/2/29/Flag_of_Brittany_%28Gwenn_ha_du%29.svg);
+}
 .flag-icon-ad.flag-icon-squared {
   background-image: url(../flags/1x1/ad.svg);
 }
